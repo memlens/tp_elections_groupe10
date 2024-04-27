@@ -11,11 +11,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Election App',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const ShowElectPage(),
+      home: ShowElectPage(candidates: _candidates),
     );
   }
 }

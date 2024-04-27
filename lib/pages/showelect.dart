@@ -5,7 +5,9 @@ import 'package:tp_election/pages/candidates.dart';
 import 'addelected.dart';
 
 class ShowElectPage extends StatefulWidget {
-  const ShowElectPage({super.key});
+  final List<String> candidates;
+
+  const ShowElectPage({required this.candidates, Key? key}) : super(key: key);
 
   @override
   _ShowElectPageState createState() => _ShowElectPageState();
@@ -22,19 +24,24 @@ class _ShowElectPageState extends State<ShowElectPage> {
   }
 
   Future<void> _fetchCandidates() async {
-    final response = await http.get(Uri.parse('https://api.example.com/login'));
-
-    if (response.statusCode == 200) {
-      final List<dynamic> jsonCandidates = json.decode(response.body);
-      setState(() {
-        _candidates = jsonCandidates.map((json) => Candidate.fromJson(json)).toList();
-      });
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to fetch candidates')),
+    // Utilisez les données reçues depuis la page précédente
+    final List<Candidate> previousCandidates = widget.candidates.map((data) {
+      final List<String> candidateData = data.split(',');
+      return Candidate(
+        id: int.parse(candidateData[0]),
+        name: candidateData[1],
+        surname: candidateData[2],
+        party: candidateData[3],
+        bio: candidateData[3],
+        imageUrl: candidateData[4],
       );
-    }
+    }).toList();
+
+    setState(() {
+      _candidates = previousCandidates;
+    });
   }
+
 
   void _onItemTapped(int index) {
     setState(() {
@@ -42,16 +49,18 @@ class _ShowElectPageState extends State<ShowElectPage> {
     });
   }
 
-  void _addCandidate(Candidate candidate) {
+  void _addCandidate(Candidate candidate) async {
     setState(() {
       _candidates.add(candidate);
     });
-    _uploadCandidate(candidate);
+    await _uploadCandidate(candidate);
+    // Recharge les données après avoir ajouté un nouveau candidat
+    await _fetchCandidates();
   }
 
   Future<void> _uploadCandidate(Candidate candidate) async {
     final response = await http.post(
-      Uri.parse('https://api.example.com/login'),
+      Uri.parse('https://jsonplaceholder.typicode.com'),
       headers: {'Content-Type': 'application/json'},
       body: json.encode(candidate.toJson()),
     );

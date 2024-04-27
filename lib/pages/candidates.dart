@@ -1,4 +1,3 @@
-
 class Candidate {
   final int id;
   final String name;
@@ -18,12 +17,12 @@ class Candidate {
 
   factory Candidate.fromJson(Map<String, dynamic> json) {
     return Candidate(
-      id: json['id'],
-      name: json['name'],
-      surname: json['surname'],
-      party: json['party'],
-      bio: json['bio'],
-      imageUrl: json['image_url'],
+      id: json['id'] ?? 0,
+      name: json['name'] ?? '',
+      surname: json['surname'] ?? '',
+      party: json['party'] ?? '',
+      bio: json['bio'] ?? '',
+      imageUrl: json['imageUrl'] ?? '',
     );
   }
 
@@ -34,7 +33,7 @@ class Candidate {
       'surname': surname,
       'party': party,
       'bio': bio,
-      'image_url': imageUrl,
+      'imageUrl': imageUrl,
     };
   }
 }
