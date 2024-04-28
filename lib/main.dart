@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: ShowElectPage(candidates: _candidates),
+      home: const ShowElectPage(candidates:[]),
     );
   }
 }

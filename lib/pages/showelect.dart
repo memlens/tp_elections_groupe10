@@ -5,7 +5,7 @@ import 'package:tp_election/pages/candidates.dart';
 import 'addelected.dart';
 
 class ShowElectPage extends StatefulWidget {
-  final List<String> candidates;
+  final List<Candidate> candidates;
 
   const ShowElectPage({required this.candidates, Key? key}) : super(key: key);
 
@@ -24,16 +24,25 @@ class _ShowElectPageState extends State<ShowElectPage> {
   }
 
   Future<void> _fetchCandidates() async {
+    print("les candidates sont recue dans le show elected");
     // Utilisez les données reçues depuis la page précédente
-    final List<Candidate> previousCandidates = widget.candidates.map((data) {
-      final List<String> candidateData = data.split(',');
+    final List<Candidate> previousCandidates = widget.candidates.map((candidateData) {
+      print(candidateData);
+
+     // final List<String> candidateData = data.split(',');
+      print("id: $candidateData[0]");
+      print("_name: $candidateData[1]");
+      print("_surname: $candidateData[2]");
+      print("_party: $candidateData[3]");
+      print("_bio: $candidateData[4]");
+      print("image: $candidateData[5]");
       return Candidate(
-        id: int.parse(candidateData[0]),
-        name: candidateData[1],
-        surname: candidateData[2],
-        party: candidateData[3],
-        bio: candidateData[3],
-        imageUrl: candidateData[4],
+        id: 1,//int.parse(candidateData[0]),
+        name: candidateData.name,
+        surname: candidateData.surname,
+        party: candidateData.party,
+        bio: candidateData.bio,
+        imageUrl: candidateData.imageUrl,
       );
     }).toList();
 
@@ -53,24 +62,25 @@ class _ShowElectPageState extends State<ShowElectPage> {
     setState(() {
       _candidates.add(candidate);
     });
-    await _uploadCandidate(candidate);
+    //await _uploadCandidate(candidate);
     // Recharge les données après avoir ajouté un nouveau candidat
     await _fetchCandidates();
   }
 
-  Future<void> _uploadCandidate(Candidate candidate) async {
-    final response = await http.post(
-      Uri.parse('https://jsonplaceholder.typicode.com'),
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode(candidate.toJson()),
-    );
-
-    if (response.statusCode != 201) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to add candidate')),
-      );
-    }
-  }
+  // Future<void> _uploadCandidate(Candidate candidate) async {
+  //   final response = await http.post(
+  //     Uri.parse('https://jsonplaceholder.typicode.com'),
+  //     headers: {'Content-Type': 'application/json'},
+  //     body: json.encode(candidate.toJson()),
+  //   );
+  //
+  //   // if  (false)  {
+  //   //   print(response.statusCode);
+  //   //   ScaffoldMessenger.of(context).showSnackBar(
+  //   //     const SnackBar(content: Text('Failed to add candidate')),
+  //   //   );
+  //   // }
+  // }
 
   @override
   Widget build(BuildContext context) {

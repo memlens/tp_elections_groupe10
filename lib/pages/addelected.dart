@@ -23,13 +23,13 @@ class _AddElectPageState extends State<AddElectPage> {
   String _surname = '';
   String _party = '';
   String _bio = '';
-  String _image = '';
+  File? _image;
 
   Future<void> _pickImage(ImageSource source) async {
     final pickedFile = await ImagePicker().pickImage(source: source);
     if (pickedFile != null) {
       setState(() {
-        _image = File(pickedFile.path) as String;
+        _image = File(pickedFile.path);
       });
     }
   }
@@ -43,6 +43,16 @@ class _AddElectPageState extends State<AddElectPage> {
       print("_surname: $_surname");
       print("_party: $_party");
       print("_bio: $_bio");
+
+
+      final createdCandidate = Candidate(
+        id: 1,
+        name: _name,
+        surname: _surname,
+        party: _party,
+        bio: _bio,
+        imageUrl: _image!.path,
+      );
 
       final requestBody = jsonEncode({
         "userId": 1,
@@ -63,18 +73,19 @@ class _AddElectPageState extends State<AddElectPage> {
         body: requestBody,
       );
 
-      if (response.statusCode == 201) {
+     /* if (response.statusCode >=200 && response.statusCode <= 299) {
         print("Données soumises avec succès !");
         final responseBody = response.body;
-        final createdCandidate = Candidate.fromJson(json.decode(responseBody));
+       // final createdCandidate = Candidate.fromJson(json.decode(responseBody));
         widget.addCandidate(createdCandidate);
         Navigator.pop(context);
         // Navigation vers la page ShowElectPage avec les données du formulaire
         Navigator.push(
           context,
           MaterialPageRoute(
+
             builder: (context) => ShowElectPage(
-               candidates: [_name, _surname, _party, _bio, _image],
+                candidates: [_name, _surname, _party, _bio, _image?.path ?? ''],
             ),
           ),
         );
@@ -82,6 +93,22 @@ class _AddElectPageState extends State<AddElectPage> {
         print(
             "Erreur lors de la soumission des données au serveur. Code de statut: ${response
                 .statusCode}");
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to add candidate')),
+        );
+      }*/
+      if (response.statusCode >= 200 && response.statusCode <= 299) {
+        print("Données soumises avec succès !");
+        widget.addCandidate(createdCandidate);
+        Navigator.pop(context);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ShowElectPage(candidates: [createdCandidate]),
+          ),
+        );
+      } else {
+        print("Erreur lors de la soumission des données au serveur. Code de statut: ${response.statusCode}");
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Failed to add candidate')),
         );
@@ -116,7 +143,7 @@ class _AddElectPageState extends State<AddElectPage> {
                   },
                   child: CircleAvatar(
                     radius: 50,
-                    backgroundImage: _image != null ? FileImage(_image! as File) : null,
+                    backgroundImage: _image != null ? FileImage(_image!) : null,
                     child: _image == null ? const Icon(Icons.camera_alt) : null,
                   ),
                 ),
